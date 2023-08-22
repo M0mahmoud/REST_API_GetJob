@@ -1,8 +1,12 @@
 import bodyParser from "body-parser";
+import { config } from "dotenv";
 import express from "express";
 
+import { connectDB } from "./db/database.js";
+
+config();
 const app = express();
-const port = 8000 || process.env.PORT;
+const port = process.env.PORT || 8000;
 
 // Steup
 app.use(bodyParser.json());
@@ -18,10 +22,10 @@ app.use((_req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.json({ msg: "Hello World!" });
-});
-
-app.listen(port, () => {
-  console.log(`listening: ${port}`);
-});
+connectDB()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`listening: ${port}`);
+    });
+  })
+  .catch((err) => console.log(err));
