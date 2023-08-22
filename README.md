@@ -10,15 +10,15 @@
 ### Step 2: Model Layer
 
 - **Set Up MongoDB Models**
-  - [ ] Define data models for user accounts, company accounts, and job postings using Mongoose schemas.
-  - [ ] Establish relationships between models, such as jobs belonging to companies.
+  - [x] Define data models for user accounts, company accounts, and job postings using Mongoose schemas.
+  - [x] Establish relationships between models, such as jobs belonging to companies.
 
 ### Step 3: Controller Layer
 
 - **User and Company Authentication**
 
-  - [ ] Implement user registration and login controllers.
-  - [ ] Create company registration and login controllers.
+  - [x] Implement user registration and login controllers.
+  - [x] Create company registration and login controllers.
 
 - **Job Posting Controllers**
 
