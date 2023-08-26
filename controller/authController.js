@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import Jwt from "jsonwebtoken";
 
 import User from "../model/User.js";
 
@@ -44,9 +45,13 @@ export async function signIn(req, res, next) {
       return res.status(422).json({ msg: "Wrong Password...!" });
     }
 
-    //TODO Jwt Authentication Token
+    const token = Jwt.sign(
+      { email: userExist.email, userId: String(userExist._id) },
+      process.env.JWT_SECRET,
+      { expiresIn: "1hr" }
+    );
 
-    return res.status(200).json({ userId: String(userExist._id) });
+    return res.status(200).json({ token, userId: String(userExist._id) });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

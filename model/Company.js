@@ -24,6 +24,7 @@ const CompanySchema = new Schema(
     location: {
       type: String,
     },
+    jobs: [{ type: Schema.Types.ObjectId, ref: "Job" }],
   },
   { timestamps: true }
 );

@@ -4,7 +4,7 @@ import express from "express";
 
 import { connectDB } from "./db/database.js";
 import authRoute from "./routes/auth.js";
-import companyRoute from "./routes/company.js";
+import jobsRoute from "./routes/jobs.js";
 import userRoute from "./routes/user.js";
 
 config();
@@ -27,8 +27,20 @@ app.use((_req, res, next) => {
 
 // Routes
 app.use("/auth", authRoute);
+app.use("/", jobsRoute);
 app.use("/", userRoute);
-app.use("/", companyRoute);
+
+// Error Handling
+app.use((error, _req, res, _next) => {
+  console.error(error);
+  const status = error.statusCode || 500;
+  const msg = error.message;
+  const data = error.data;
+  res.status(status).json({
+    msg,
+    data,
+  });
+});
 
 connectDB()
   .then(() => {
