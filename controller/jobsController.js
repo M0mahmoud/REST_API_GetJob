@@ -2,18 +2,24 @@ import { Types } from "mongoose";
 import Job from "../model/Job.js";
 
 export const getAllJobs = async (req, res, next) => {
-  const currentPage = req.query.currentPage || 1;
-  const perPage = 10;
+  const pageNumber = req.params.page;
+
+  let peerPage = 10;
+  const skipAmount = (pageNumber - 1) * peerPage;
 
   try {
     const jobCount = await Job.find().countDocuments();
     const jobs = await Job.find()
       .sort({ createdAt: -1 })
-      .skip((currentPage - 1) * perPage)
-      .limit(perPage);
+      .skip(skipAmount)
+      .limit(peerPage);
+
+    const isNext = jobCount > skipAmount + jobs.length;
+
     res.status(200).json({
       jobs,
-      jobCount,
+      isNext,
+      jobCount
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -62,6 +68,66 @@ export const postNewJob = async (req, res, next) => {
       msg: "Job successfully Created...",
       job: newJob,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+export const updateJob = async (req, res, next) => {
+  // TODO: Error handling
+  const jobId = req.params.jobId;
+
+  const { title, location, jobType, description, skillsRequired } = req.body;
+
+  try {
+    const job = await Job.findById(jobId);
+
+    // .populate("company");
+
+    if (!job) {
+      const error = new Error("Could Not Find This Job...!");
+      error.statusCode = 404;
+      throw error;
+    }
+    //TODO:
+    // if (String(job.._id) !== req.userId) {
+    //   const error = new Error("Not Authorized");
+    //   error.statusCode = 404;
+    //   throw error;
+    // }
+
+    job.title = title;
+    job.location = location;
+    job.jobType = jobType;
+    job.description = description;
+    job.skillsRequired = skillsRequired;
+
+    await job.save();
+    res.status(200).json({ msg: "Job Update Scessfully", job });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+export const deleteJob = async (req, res, next) => {
+  const jobId = req.params.jobId;
+
+  try {
+    const job = await Job.findById(jobId);
+    if (!job) {
+      const error = new Error("Could Not Find This Job!");
+      error.statusCode = 404;
+      throw error;
+    }
+    // TODO: DELETE From User Job Application
+    await Job.findByIdAndDelete(jobId);
+    return res.status(200).json({ msg: "Delete Success" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
