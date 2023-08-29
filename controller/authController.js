@@ -5,7 +5,7 @@ import User from "../model/User.js";
 
 export async function signUp(req, res, next) {
   //TODO validation error soon
-  const { name, email, password } = req.body;
+  const { name, email, password, username } = req.body;
 
   try {
     const emailExist = await User.findOne({ email });
@@ -13,10 +13,16 @@ export async function signUp(req, res, next) {
       return res.status(422).json({ msg: "Email already exists" });
     }
 
+    const userNameExist = await User.findOne({ username });
+    if (userNameExist) {
+      return res.status(422).json({ msg: "UserName already exists" });
+    }
+
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = new User({
       email,
       name,
+      username,
       password: hashPassword,
     });
     await newUser.save();

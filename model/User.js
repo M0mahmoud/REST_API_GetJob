@@ -6,6 +6,10 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -15,7 +19,13 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-
+    appliedJob: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Job",
+      },
+    ],
+    bio: { type: String },
     userSkills: [String],
   },
   { timestamps: true }

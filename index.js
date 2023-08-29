@@ -1,4 +1,3 @@
-import bodyParser from "body-parser";
 import { config } from "dotenv";
 import express from "express";
 
@@ -12,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 8000;
 
 // Steup
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Cros
 app.use((_req, res, next) => {
@@ -28,7 +27,7 @@ app.use((_req, res, next) => {
 // Routes
 app.use("/auth", authRoute);
 app.use("/", jobsRoute);
-app.use("/", userRoute);
+app.use("/user", userRoute);
 
 // Error Handling
 app.use((error, _req, res, _next) => {
