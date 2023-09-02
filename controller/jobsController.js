@@ -1,8 +1,13 @@
+import { validationResult } from "express-validator";
 import { Types } from "mongoose";
 import Job from "../model/Job.js";
 
 export const getAllJobs = async (req, res, next) => {
   const pageNumber = req.params.page;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
 
   let peerPage = 10;
   const skipAmount = (pageNumber - 1) * peerPage;
@@ -19,7 +24,7 @@ export const getAllJobs = async (req, res, next) => {
     res.status(200).json({
       jobs,
       isNext,
-      jobCount
+      jobCount,
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -30,6 +35,11 @@ export const getAllJobs = async (req, res, next) => {
 };
 export const getOneJob = async (req, res, next) => {
   const jobId = req.params.jobId;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
   try {
     const job = await Job.findById(jobId);
     if (!job) {
@@ -50,8 +60,12 @@ export const getOneJob = async (req, res, next) => {
 };
 
 export const postNewJob = async (req, res, next) => {
-  // TODO: Perform input validation and error handling here
   const { title, location, jobType, description, skills } = req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
   // 64e6271753c03b0c169d6463
   const companyID = new Types.ObjectId(req.userId);
   try {
@@ -77,11 +91,13 @@ export const postNewJob = async (req, res, next) => {
 };
 
 export const updateJob = async (req, res, next) => {
-  // TODO: Error handling
   const jobId = req.params.jobId;
-
   const { title, location, jobType, description, skillsRequired } = req.body;
+  const errors = validationResult(req);
 
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
   try {
     const job = await Job.findById(jobId);
 

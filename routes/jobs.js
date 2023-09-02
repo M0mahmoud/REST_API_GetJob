@@ -8,15 +8,25 @@ import {
   updateJob,
 } from "../controller/jobsController.js";
 import isAuthenticated from "../middleware/isAuth.js";
+import {
+  jobValidationRules,
+  validateJobIdParameter,
+  validatePageParameter,
+} from "../validation/job.js";
 const router = Router();
 
 // Puplic Routes
-router.get("/jobs/:page", getAllJobs);
-router.get("/job/:jobId", getOneJob);
+router.get("/jobs/:page", validatePageParameter, getAllJobs);
+router.get("/job/:jobId", validateJobIdParameter, getOneJob);
 
 // Private Routes
-router.post("/post-job", isAuthenticated, postNewJob);
-router.patch("/update-job/:jobId", isAuthenticated, updateJob);
+router.post("/post-job", isAuthenticated, jobValidationRules, postNewJob);
+router.patch(
+  "/update-job/:jobId",
+  isAuthenticated,
+  jobValidationRules,
+  updateJob
+);
 router.delete("/delete-job/:jobId", isAuthenticated, deleteJob);
 
 export default router;

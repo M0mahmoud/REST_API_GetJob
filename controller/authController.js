@@ -1,11 +1,16 @@
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 
+import { validationResult } from "express-validator";
 import User from "../model/User.js";
 
 export async function signUp(req, res, next) {
-  //TODO validation error soon
   const { name, email, password, username } = req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
 
   try {
     const emailExist = await User.findOne({ email });
@@ -37,8 +42,12 @@ export async function signUp(req, res, next) {
   }
 }
 export async function signIn(req, res, next) {
-  //TODO validation error soon
   const { email, password } = req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
 
   try {
     const userExist = await User.findOne({ email });
@@ -57,7 +66,11 @@ export async function signIn(req, res, next) {
       { expiresIn: "1hr" }
     );
 
-    return res.status(200).json({ token, userId: String(userExist._id) });
+    return res.status(200).json({
+      token,
+      userId: String(userExist._id),
+      username: userExist.username,
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
