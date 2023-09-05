@@ -1,12 +1,15 @@
 import { validationResult } from "express-validator";
 import { Types } from "mongoose";
 import Job from "../model/Job.js";
+import HttpStatus from "../utils/HttpStatus.js";
 
 export const getAllJobs = async (req, res, next) => {
   const pageNumber = req.params.page;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res
+      .status(422)
+      .json({ status: HttpStatus.FAIL, data: { errors: errors.array() } });
   }
 
   let peerPage = 10;
@@ -22,9 +25,12 @@ export const getAllJobs = async (req, res, next) => {
     const isNext = jobCount > skipAmount + jobs.length;
 
     res.status(200).json({
-      jobs,
-      isNext,
-      jobCount,
+      status: HttpStatus.SUCCESS,
+      data: {
+        jobs,
+        isNext,
+        jobCount,
+      },
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -37,7 +43,9 @@ export const getOneJob = async (req, res, next) => {
   const jobId = req.params.jobId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res
+      .status(422)
+      .json({ status: HttpStatus.FAIL, data: { errors: errors.array() } });
   }
 
   try {
@@ -48,8 +56,10 @@ export const getOneJob = async (req, res, next) => {
       throw error;
     }
     res.status(200).json({
-      msg: "Found This Job",
-      job,
+      status: HttpStatus.SUCCESS,
+      data: {
+        job,
+      },
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -64,7 +74,9 @@ export const postNewJob = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res
+      .status(422)
+      .json({ status: HttpStatus.FAIL, data: { errors: errors.array() } });
   }
   // 64e6271753c03b0c169d6463
   const companyID = new Types.ObjectId(req.userId);
@@ -79,8 +91,10 @@ export const postNewJob = async (req, res, next) => {
     });
     await newJob.save();
     return res.status(201).json({
-      msg: "Job successfully Created...",
-      job: newJob,
+      status: HttpStatus.SUCCESS,
+      data: {
+        job: newJob,
+      },
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -96,7 +110,9 @@ export const updateJob = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res
+      .status(422)
+      .json({ status: HttpStatus.FAIL, data: { errors: errors.array() } });
   }
   try {
     const job = await Job.findById(jobId);
@@ -122,7 +138,7 @@ export const updateJob = async (req, res, next) => {
     job.skillsRequired = skillsRequired;
 
     await job.save();
-    res.status(200).json({ msg: "Job Update Scessfully", job });
+    res.status(200).json({ status: HttpStatus.SUCCESS, data: { job } });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -143,7 +159,7 @@ export const deleteJob = async (req, res, next) => {
     }
     // TODO: DELETE From User Job Application
     await Job.findByIdAndDelete(jobId);
-    return res.status(200).json({ msg: "Delete Success" });
+    return res.status(200).json({ status: HttpStatus.SUCCESS, data: null });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

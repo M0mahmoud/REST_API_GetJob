@@ -5,6 +5,7 @@ import { connectDB } from "./db/database.js";
 import authRoute from "./routes/auth.js";
 import jobsRoute from "./routes/jobs.js";
 import userRoute from "./routes/user.js";
+import HttpStatus from "./utils/HttpStatus.js";
 
 config();
 const app = express();
@@ -36,8 +37,11 @@ app.use((error, _req, res, _next) => {
   const msg = error.message;
   const data = error.data;
   res.status(status).json({
-    msg,
-    data,
+    status: HttpStatus.ERROR,
+    data: {
+      msg,
+      data,
+    },
   });
 });
 

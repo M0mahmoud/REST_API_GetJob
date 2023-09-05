@@ -1,5 +1,6 @@
 import Job from "../model/Job.js";
 import User from "../model/User.js";
+import HttpStatus from "../utils/HttpStatus.js";
 
 export const getUser = async (req, res, next) => {
   const username = req.params.username;
@@ -11,8 +12,10 @@ export const getUser = async (req, res, next) => {
       throw error;
     }
     res.status(200).json({
-      msg: "User Found",
-      user,
+      status: HttpStatus.SUCCESS,
+      data: {
+        user,
+      },
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -39,7 +42,7 @@ export const updateUser = async (req, res, next) => {
     user.name = name;
 
     await user.save();
-    res.status(200).json({ msg: `User ${username} Update Scessfully`, user });
+    res.status(200).json({ status: HttpStatus.SUCCESS, data: { user } });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -60,7 +63,7 @@ export const deleteUser = async (req, res, next) => {
     }
     // TODO: DELETE From User Job Application
     await User.findOneAndDelete({ username });
-    return res.status(200).json({ msg: "Delete Success" });
+    return res.status(200).json({ status: HttpStatus.SUCCESS, data: null });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -75,20 +78,27 @@ export const applyForJob = async (req, res, next) => {
     const job = await Job.findById(jobId);
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found!" });
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "User not found!" } });
     }
     if (!job) {
-      return res.status(404).json({ msg: "Job not found!" });
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "Job not found!" } });
     }
 
     if (!job.isOpen) {
-      return res.status(404).json({ msg: "Job Closed...!" });
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "Job Closed...!" } });
     }
 
     if (user.appliedJob.includes(jobId)) {
-      return res
-        .status(400)
-        .json({ message: "User has already applied for this job" });
+      return res.status(400).json({
+        status: HttpStatus.FAIL,
+        data: { msg: "User has already applied for this job" },
+      });
     }
 
     user.appliedJob.push(jobId);
@@ -98,7 +108,7 @@ export const applyForJob = async (req, res, next) => {
     await user.save();
     await job.save();
 
-    res.status(201).json({ message: "Applied successfully" });
+    res.status(201).json({ status: HttpStatus.SUCCESS, data: null });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -115,13 +125,20 @@ export const cancelApply = async (req, res) => {
     const job = await Job.findById(jobId).populate("applicants");
 
     if (!user) {
-      return res.status(404).json({ msg: "User not found!" });
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "User not found!" } });
     }
     if (!job) {
-      return res.status(404).json({ msg: "Job not found!" });
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "Job not found!" } });
     }
+
     if (!job.isOpen) {
-      return res.status(404).json({ msg: "Job Closed...!" });
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "Job Closed...!" } });
     }
 
     const filterUserJobs = user.appliedJob.filter(
@@ -138,9 +155,7 @@ export const cancelApply = async (req, res) => {
     await user.save();
     await job.save();
 
-    return res
-      .status(200)
-      .json({ msg: "Application canceled successfully", user });
+    return res.status(200).json({ status: HttpStatus.SUCCESS, data: null });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
