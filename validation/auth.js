@@ -7,7 +7,7 @@ export const signUpValidation = [
     .notEmpty()
     .toLowerCase()
     .isLength({ min: 3, max: 15 }),
-  body("password", "Enter more than 12 characters")
+  body("password", "Password must be more than 12 characters")
     .notEmpty()
     .toLowerCase()
     .isLength({ min: 12 }),

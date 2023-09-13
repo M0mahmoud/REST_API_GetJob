@@ -117,7 +117,7 @@ export const applyForJob = async (req, res, next) => {
   }
 };
 
-export const cancelApply = async (req, res) => {
+export const cancelApply = async (req, res, next) => {
   const { jobId, userId } = req.body;
 
   try {
@@ -156,6 +156,42 @@ export const cancelApply = async (req, res) => {
     await job.save();
 
     return res.status(200).json({ status: HttpStatus.SUCCESS, data: null });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+export const checkApplication = async (req, res, next) => {
+  const { jobId, userId } = req.body;
+
+  try {
+    const user = await User.findById(userId).populate("appliedJob");
+    const job = await Job.findById(jobId).populate("applicants");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "User not found!" } });
+    }
+    if (!job) {
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "Job not found!" } });
+    }
+
+    if (!job.isOpen) {
+      return res
+        .status(404)
+        .json({ status: HttpStatus.ERROR, data: { msg: "Job Closed...!" } });
+    }
+
+    const hasApplied = user.appliedJob.some((job) => String(job._id) === jobId);
+
+    return res
+      .status(200)
+      .json({ status: HttpStatus.SUCCESS, data: { hasApplied } });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
