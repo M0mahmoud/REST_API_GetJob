@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import express from "express";
 
+import UserAgent from "express-useragent";
 import { connectDB } from "./db/database.js";
 import authRoute from "./routes/auth.js";
 import jobsRoute from "./routes/jobs.js";
@@ -13,6 +14,7 @@ const port = process.env.PORT || 8000;
 
 // Steup
 app.use(express.json());
+app.use(UserAgent.express());
 
 // Cros
 app.use((_req, res, next) => {
