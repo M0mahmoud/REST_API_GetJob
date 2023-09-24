@@ -97,3 +97,49 @@ export const signUpEmailTemplate = `<!DOCTYPE html>
     </div>
 </body>
 </html>`;
+export const ResetPasswordTemplate = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .header {
+            color: #26a4ff;
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .header h1{
+            color: #26a4ff;
+            font-weight: bold;
+        }
+        .content {
+            padding:20px 0px;
+        }
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            color:#202430;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://vitejs.dev/logo-with-shadow.png" alt="Image" style="max-width: 150px;">
+            <h1>Password Reset Request</h1>
+        </div>
+        <div class="content">
+            <h2>Click the following link to reset your password:</h2>
+            <a target="_blank" href="LINK">LINK</a>
+        </div>
+        <div class="footer">
+            <p>&copy; 2023 Your <a href="https://m05.vercel.app/">GetJob</a>. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>`;

@@ -27,6 +27,8 @@ const UserSchema = new Schema(
     ],
     bio: { type: String },
     userSkills: [String],
+    title: { type: String },
+    resetToken: { type: String },
   },
   { timestamps: true }
 );
