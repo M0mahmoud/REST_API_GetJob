@@ -25,10 +25,10 @@ const UserSchema = new Schema(
         ref: "Job",
       },
     ],
-    bio: { type: String },
-    userSkills: [String],
-    title: { type: String },
-    resetToken: { type: String },
+    bio: String,
+    title: String,
+    resetToken: String,
+    skills: [{ value: String, label: String }],
   },
   { timestamps: true }
 );

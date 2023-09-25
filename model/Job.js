@@ -21,8 +21,7 @@ const JobSchema = new Schema(
     description: {
       type: String,
     },
-    skillsRequired: [String],
-
+    skills: [{ value: String, label: String }],
     isOpen: {
       type: Boolean,
       default: true,

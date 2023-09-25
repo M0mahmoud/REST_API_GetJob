@@ -34,7 +34,7 @@ export const getUser = async (req, res, next) => {
 export const updateUserProfile = async (req, res, next) => {
   // TODO: Error handling
   const userParams = req.params.username;
-  const { email, name, username, title } = req.body;
+  const { email, name, username, title, skills } = req.body;
 
   try {
     const user = await User.findOne({ username: userParams });
@@ -48,6 +48,7 @@ export const updateUserProfile = async (req, res, next) => {
     user.email = email;
     user.username = username;
     user.title = title;
+    user.skills = skills;
 
     await user.save();
     res.status(200).json({ status: HttpStatus.SUCCESS, data: { user } });

@@ -87,7 +87,7 @@ export const postNewJob = async (req, res, next) => {
       location,
       jobType,
       description,
-      skillsRequired: skills,
+      skills,
     });
     await newJob.save();
     return res.status(201).json({
@@ -106,7 +106,7 @@ export const postNewJob = async (req, res, next) => {
 
 export const updateJob = async (req, res, next) => {
   const jobId = req.params.jobId;
-  const { title, location, jobType, description, skillsRequired } = req.body;
+  const { title, location, jobType, description, skills } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -135,7 +135,7 @@ export const updateJob = async (req, res, next) => {
     job.location = location;
     job.jobType = jobType;
     job.description = description;
-    job.skillsRequired = skillsRequired;
+    job.skills = skills;
 
     await job.save();
     res.status(200).json({ status: HttpStatus.SUCCESS, data: { job } });

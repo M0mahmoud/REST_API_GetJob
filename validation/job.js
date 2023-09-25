@@ -15,5 +15,5 @@ export const jobValidationRules = [
   body("description", "Description is required")
     .notEmpty()
     .isLength({ min: 25 }),
-  body("skillsRequired", "kills must be an array").isArray().notEmpty(),
+  body("skills", "kills must be an array").isArray().notEmpty(),
 ];
