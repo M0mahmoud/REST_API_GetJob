@@ -4,7 +4,8 @@ import Job from "../model/Job.js";
 import HttpStatus from "../utils/HttpStatus.js";
 
 export const getAllJobs = async (req, res, next) => {
-  const pageNumber = req.params.page;
+  const { page, level, type } = req.query;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res
@@ -12,24 +13,29 @@ export const getAllJobs = async (req, res, next) => {
       .json({ status: HttpStatus.FAIL, data: { errors: errors.array() } });
   }
 
-  let peerPage = 10;
-  const skipAmount = (pageNumber - 1) * peerPage;
+  let PEER_PAGE = 10;
+  const skipAmount = (page - 1) * PEER_PAGE;
+
+  const query = {};
+  if (level) query.level = { $in: level.split(" ") };
+  if (type) query.jobType = { $in: type.split(" ") };
 
   try {
-    const jobCount = await Job.find().countDocuments();
-    const jobs = await Job.find()
+    const allJobCount = await Job.find().countDocuments();
+    const filterJobCount = await Job.find(query).countDocuments();
+    const jobs = await Job.find(query)
       .sort({ createdAt: -1 })
       .skip(skipAmount)
-      .limit(peerPage);
+      .limit(PEER_PAGE);
 
-    const isNext = jobCount > skipAmount + jobs.length;
+    const isNext = filterJobCount > skipAmount + jobs.length;
 
     res.status(200).json({
       status: HttpStatus.SUCCESS,
       data: {
         jobs,
         isNext,
-        jobCount,
+        allJobCount,
       },
     });
   } catch (err) {
@@ -106,7 +112,7 @@ export const postNewJob = async (req, res, next) => {
 
 export const updateJob = async (req, res, next) => {
   const jobId = req.params.jobId;
-  const { title, location, jobType, description, skills } = req.body;
+  const { title, location, jobType, description, skills, level } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -136,6 +142,7 @@ export const updateJob = async (req, res, next) => {
     job.jobType = jobType;
     job.description = description;
     job.skills = skills;
+    job.level = level;
 
     await job.save();
     res.status(200).json({ status: HttpStatus.SUCCESS, data: { job } });

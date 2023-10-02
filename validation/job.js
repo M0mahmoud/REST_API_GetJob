@@ -1,8 +1,8 @@
 import { body, param } from "express-validator";
 
-export const validatePageParameter = [
-  param("page", "Page must be a positive integer").isInt({ min: 1 }), // Ensure it's a positive
-];
+// export const validatePageParameter = [
+//   param("page", "Page must be a positive integer").isInt({ min: 1 }), // Ensure it's a positive
+// ];
 
 export const validateJobIdParameter = [
   param("jobId", "Invalid job ID format").isMongoId(),

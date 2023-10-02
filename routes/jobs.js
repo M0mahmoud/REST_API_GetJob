@@ -11,12 +11,11 @@ import isAuthenticated from "../middleware/isAuth.js";
 import {
   jobValidationRules,
   validateJobIdParameter,
-  validatePageParameter,
 } from "../validation/job.js";
 const router = Router();
 
 // Puplic Routes
-router.get("/jobs/:page", validatePageParameter, getAllJobs);
+router.get("/jobs", getAllJobs);
 router.get("/job/:jobId", validateJobIdParameter, getOneJob);
 
 // Private Routes

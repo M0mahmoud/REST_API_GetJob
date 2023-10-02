@@ -17,6 +17,8 @@ const JobSchema = new Schema(
     },
     jobType: {
       type: String,
+      enum: ["full-time", "part-time", "internship", "remote", "contract"],
+      default: "full-time",
     },
     description: {
       type: String,
@@ -35,6 +37,11 @@ const JobSchema = new Schema(
     numApplicants: {
       type: Number,
       default: 0,
+    },
+    level: {
+      type: String,
+      enum: ["entry-level", "mid-level", "senior-level"],
+      default: "senior-level",
     },
   },
   { timestamps: true }

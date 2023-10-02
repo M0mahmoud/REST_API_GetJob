@@ -111,7 +111,7 @@ export async function signIn(req, res, next) {
     const token = Jwt.sign(
       { email: userExist.email, userId: String(userExist._id) },
       process.env.JWT_SECRET,
-      { expiresIn: "1hr" }
+      { expiresIn: "7d" }
     );
 
     const transport = nodemailer.createTransport({
